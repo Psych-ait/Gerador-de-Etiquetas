@@ -405,6 +405,41 @@
                     "codigo": "03011.9149.2026"
                 }
             ]
+        },
+        "Valentine Com Puff": {
+            "Produto": "Valentine Com Puff",
+            "Módulos": "2 modulos de 1M + puff",
+            "Braços": "20cm",
+            "Almofadas": "A Parte",
+            "Tecido": "Kruger Prata Castanho 2425",
+            "Pé": "Madeira",
+            "Fornecedor": "LAR",
+            "Prazo": "60 Dias úteis",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/lara/valentine .png",
+            "specs_list": [
+                "Módulos: 2 modulos de 1M + puff",
+                "Braços: 20cm",
+                "Almofadas: A Parte",
+                "Tecido: Kruger Prata Castanho 2425",
+                "Pé: Madeira"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "2,00M",
+                    "medida": "2 Mód. 80 ",
+                    "codigo": "03011.7695.2026"
+                },
+                {
+                    "tamanho": "2,40M",
+                    "medida": "2 Mód. 100 ",
+                    "codigo": "03011.8341.2026"
+                },
+                {
+                    "tamanho": "2,80M",
+                    "medida": "2 Mód. 120 ",
+                    "codigo": "03011.9149.2026"
+                }
+            ]
         }
     }
 }

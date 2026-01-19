@@ -6,6 +6,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import mm
 from reportlab.lib.colors import HexColor
+from reportlab.lib.utils import simpleSplit
 import os
 import json
 import logging
@@ -13,7 +14,8 @@ from typing import Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
 import io
-# Tenta importar pdf2image, se não der, segue sem preview
+
+# Tenta importar pdf2image
 try:
     from pdf2image import convert_from_bytes
     HAS_PDF2IMAGE = True
@@ -31,16 +33,15 @@ logger = logging.getLogger("FortunneApp")
 # === CONSTANTES & CONFIGURAÇÃO ===
 @dataclass
 class EtiquetaConfig:
-    """Configuração para etiquetas A6 (105x148.5mm) em folha A4"""
     LARGURA: float = 105 * mm
     ALTURA: float = 148.5 * mm
     MARGEM: float = 5 * mm
     
     # Fontes
-    FONTE_TITULO: int = 13
+    FONTE_TITULO: int = 14
     FONTE_SUBTITULO: int = 9
-    FONTE_SPECS: int = 7
-    FONTE_TAMANHOS: int = 7
+    FONTE_SPECS: int = 8
+    FONTE_TAMANHOS: int = 8
     
     # Cores
     COR_FUNDO: HexColor = HexColor('#FFFFFF')
@@ -61,7 +62,6 @@ class EtiquetaConfig:
     IMG_MARGEM_BASE: float = 5 * mm
     IMG_LARGURA_MAX: float = 85 * mm
 
-# Configuração padrão
 DEFAULT_CONFIG = {
     "Sofá": {
         "campos": ["Módulos", "Braços", "Almofadas", "Tecido", "Pé"],
@@ -86,16 +86,12 @@ class GerenciadorDados:
 
     @classmethod
     def carregar_config(cls) -> Dict:
-        """Carrega configurações de tipos de produtos"""
         if not os.path.exists(cls.ARQUIVO_CONFIG):
             cls.salvar_config(DEFAULT_CONFIG)
             return DEFAULT_CONFIG
         try:
-            with open(cls.ARQUIVO_CONFIG, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except Exception as e:
-            logger.error(f"Config corrompida: {e}")
-            return DEFAULT_CONFIG
+            with open(cls.ARQUIVO_CONFIG, 'r', encoding='utf-8') as f: return json.load(f)
+        except: return DEFAULT_CONFIG
 
     @classmethod
     def salvar_config(cls, dados: Dict):
@@ -106,8 +102,7 @@ class GerenciadorDados:
     def carregar_historico(cls) -> Dict:
         if not os.path.exists(cls.ARQUIVO_HISTORICO): return {}
         try:
-            with open(cls.ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f:
-                return json.load(f)
+            with open(cls.ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f: return json.load(f)
         except: return {}
 
     @classmethod
@@ -124,13 +119,10 @@ class GerenciadorDados:
 
     @classmethod
     def carregar_layouts(cls) -> Dict:
-        if not os.path.exists(cls.ARQUIVO_LAYOUTS): 
-            return {"layouts": [], "ultimo_usado": None}
+        if not os.path.exists(cls.ARQUIVO_LAYOUTS): return {"layouts": [], "ultimo_usado": None}
         try:
-            with open(cls.ARQUIVO_LAYOUTS, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except: 
-            return {"layouts": [], "ultimo_usado": None}
+            with open(cls.ARQUIVO_LAYOUTS, 'r', encoding='utf-8') as f: return json.load(f)
+        except: return {"layouts": [], "ultimo_usado": None}
 
     @classmethod
     def salvar_layout(cls, nome: str, posicoes: List[Dict]):
@@ -142,7 +134,6 @@ class GerenciadorDados:
             "data_criacao": datetime.now().strftime("%Y-%m-%d %H:%M")
         })
         data["layouts"] = data["layouts"][-10:]
-        data["ultimo_usado"] = nome
         with open(cls.ARQUIVO_LAYOUTS, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
@@ -150,70 +141,60 @@ class GerenciadorDados:
     def excluir_layout(cls, nome: str):
         data = cls.carregar_layouts()
         data["layouts"] = [l for l in data["layouts"] if l["nome"] != nome]
-        if data["ultimo_usado"] == nome:
-            data["ultimo_usado"] = None
         with open(cls.ARQUIVO_LAYOUTS, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
 
-    # === NOVOS MÉTODOS PARA A BIBLIOTECA ===
     @classmethod
     def carregar_db_produtos(cls) -> Dict:
-        """Carrega o banco de dados de produtos salvos"""
         if not os.path.exists(cls.ARQUIVO_DB_PRODUTOS): return {}
         try:
-            with open(cls.ARQUIVO_DB_PRODUTOS, 'r', encoding='utf-8') as f:
-                return json.load(f)
+            with open(cls.ARQUIVO_DB_PRODUTOS, 'r', encoding='utf-8') as f: return json.load(f)
         except: return {}
 
     @classmethod
     def salvar_produto_db(cls, dados: Dict):
-        """Salva um produto no banco de dados organizado por fornecedor"""
         db = cls.carregar_db_produtos()
         fornecedor = dados.get('Fornecedor', 'Sem Fornecedor').strip()
         nome_produto = dados.get('Produto', 'Sem Nome').strip()
-        
         if not fornecedor: fornecedor = 'Outros'
-        
-        if fornecedor not in db:
-            db[fornecedor] = {}
-            
-        # Salva o produto
+        if fornecedor not in db: db[fornecedor] = {}
         db[fornecedor][nome_produto] = dados
-        
         with open(cls.ARQUIVO_DB_PRODUTOS, 'w', encoding='utf-8') as f:
             json.dump(db, f, indent=4, ensure_ascii=False)
-            
-    @classmethod
-    def excluir_produto_db(cls, fornecedor, nome_produto):
-        db = cls.carregar_db_produtos()
-        if fornecedor in db and nome_produto in db[fornecedor]:
-            del db[fornecedor][nome_produto]
-            if not db[fornecedor]:
-                del db[fornecedor]
-            with open(cls.ARQUIVO_DB_PRODUTOS, 'w', encoding='utf-8') as f:
-                json.dump(db, f, indent=4, ensure_ascii=False)
 
 # === MOTOR DE GERAÇÃO PDF ===
 class GeradorPDF:
     def __init__(self):
         self.cfg = EtiquetaConfig()
 
-    def desenhar_layout(self, c, x, y, dados, img_path, logo_path, usar_img):
-        """Desenha uma etiqueta individual"""
-        # Fundo e Borda
+    def desenhar_layout(self, c, x, y, dados, logo_path, usar_img):
+        """Desenha uma etiqueta individual com correções de texto"""
+        img_path = dados.get('imagem', '')
+        
+        # --- FUNDO E BORDA ---
         c.setFillColor(self.cfg.COR_FUNDO)
         c.rect(x, y, self.cfg.LARGURA, self.cfg.ALTURA, fill=1, stroke=0)
         c.setStrokeColor(HexColor('#CCCCCC'))
         c.setLineWidth(0.5)
         c.rect(x, y, self.cfg.LARGURA, self.cfg.ALTURA, fill=0, stroke=1)
         
-        # Título
+        # --- TÍTULO AUTO-AJUSTÁVEL ---
+        titulo = str(dados.get('Produto', ''))
         c.setFillColor(self.cfg.COR_TEXTO)
-        c.setFont("Helvetica-Bold", self.cfg.FONTE_TITULO)
+        
+        # Lógica para reduzir fonte se o título for muito longo
+        tamanho_fonte = self.cfg.FONTE_TITULO
+        largura_max_titulo = self.cfg.LARGURA - 10*mm # Margem de segurança
+        c.setFont("Helvetica-Bold", tamanho_fonte)
+        
+        while c.stringWidth(titulo, "Helvetica-Bold", tamanho_fonte) > largura_max_titulo and tamanho_fonte > 8:
+            tamanho_fonte -= 1
+            c.setFont("Helvetica-Bold", tamanho_fonte)
+            
         titulo_y = y + self.cfg.ALTURA - self.cfg.TITULO_Y_OFFSET
-        c.drawCentredString(x + self.cfg.LARGURA/2, titulo_y, str(dados.get('Produto', '')))
+        c.drawCentredString(x + self.cfg.LARGURA/2, titulo_y, titulo)
 
-        # Imagem
+        # --- ÁREA DA IMAGEM ---
         img_limite_superior = titulo_y - self.cfg.IMG_MARGEM_TOPO
         boxes_topo = y + self.cfg.BOX_Y_BASE + self.cfg.BOX_ALTURA
         img_limite_inferior = boxes_topo + self.cfg.IMG_MARGEM_BASE
@@ -230,25 +211,39 @@ class GeradorPDF:
         else:
             self._desenhar_placeholder_imagem(c, x, img_limite_inferior, self.cfg.IMG_LARGURA_MAX, img_altura_max)
 
-        # Boxes
+        # --- BOXES DO MEIO ---
         bx = x + self.cfg.MARGEM
         by = y + self.cfg.BOX_Y_BASE
-        self._desenhar_box(c, bx, by, "Especificações", dados.get('specs_list', []))
+        
+        # Box Esquerdo (Specs) com Quebra de Linha
+        self._desenhar_box_specs(c, bx, by, "Especificações", dados.get('specs_list', []))
 
+        # Box Direito (Tamanhos) Centralizado
         bx2 = x + 53*mm
         self._desenhar_box_tamanhos(c, bx2, by, dados.get('tamanhos', []))
 
-        # Rodapé
+        # --- RODAPÉ ---
         by_rod = y + self.cfg.BOX_RODAPE_Y
         c.setStrokeColor(HexColor('#CCCCCC'))
         c.setLineWidth(0.8)
         c.roundRect(bx, by_rod, self.cfg.BOX_LARGURA, self.cfg.BOX_RODAPE_ALTURA, 2*mm)
         
         c.setFillColor(self.cfg.COR_TEXTO)
+        
+        # Fornecedor (com quebra de linha se necessário)
+        fornecedor = str(dados.get('Fornecedor', ''))
         c.setFont("Helvetica-Bold", self.cfg.FONTE_SUBTITULO)
-        c.drawString(bx+3*mm, by_rod+20*mm, str(dados.get('Fornecedor', '')))
+        
+        # Wrap simples para fornecedor
+        linhas_forn = simpleSplit(fornecedor, "Helvetica-Bold", self.cfg.FONTE_SUBTITULO, self.cfg.BOX_LARGURA - 4*mm)
+        y_forn = by_rod + 20*mm
+        for linha in linhas_forn:
+            c.drawString(bx+3*mm, y_forn, linha)
+            y_forn -= 4*mm
+
+        # Prazo
         c.setFont("Helvetica", 7)
-        c.drawString(bx+3*mm, by_rod+15*mm, str(dados.get('Prazo', '')))
+        c.drawString(bx+3*mm, by_rod+5*mm, str(dados.get('Prazo', '')))
 
         # Logo
         if logo_path and os.path.exists(logo_path):
@@ -267,39 +262,81 @@ class GeradorPDF:
         c.setFont("Helvetica", 9)
         c.drawCentredString(x_base + self.cfg.LARGURA/2, y_base + altura/2, "📷 Sem imagem")
 
-    def _desenhar_box(self, c, x, y, titulo, linhas):
+    def _desenhar_box_specs(self, c, x, y, titulo, linhas):
+        """Desenha box de especificações com quebra de linha (Word Wrap)"""
         c.setLineWidth(0.8)
+        c.setStrokeColor(HexColor('#CCCCCC'))
         c.roundRect(x, y, self.cfg.BOX_LARGURA, self.cfg.BOX_ALTURA, 2*mm)
+        
+        # Título
+        c.setFillColor(self.cfg.COR_TEXTO)
         c.setFont("Helvetica-Bold", self.cfg.FONTE_SUBTITULO)
         c.drawCentredString(x + self.cfg.BOX_LARGURA/2, y + self.cfg.BOX_ALTURA - 7*mm, titulo)
         c.line(x+2*mm, y+self.cfg.BOX_ALTURA-10*mm, x+self.cfg.BOX_LARGURA-2*mm, y+self.cfg.BOX_ALTURA-10*mm)
+        
+        # Conteúdo com Wrap
         c.setFont("Helvetica", self.cfg.FONTE_SPECS)
         cur_y = y + self.cfg.BOX_ALTURA - 14*mm
+        largura_util = self.cfg.BOX_LARGURA - 4*mm # Margem interna
+        
         for linha in linhas:
-            if linha and str(linha).strip():
-                c.drawString(x+2*mm, cur_y, f"• {linha}")
-                cur_y -= 4*mm
+            if not linha or not str(linha).strip(): continue
+            
+            txt_completo = f"• {linha}"
+            # Quebra o texto em várias linhas se ultrapassar a largura
+            linhas_quebradas = simpleSplit(txt_completo, "Helvetica", self.cfg.FONTE_SPECS, largura_util)
+            
+            for sub_linha in linhas_quebradas:
+                # Verifica se ainda cabe no box verticalmente
+                if cur_y < y + 2*mm: break 
+                c.drawString(x+2*mm, cur_y, sub_linha)
+                cur_y -= 3.5*mm
 
     def _desenhar_box_tamanhos(self, c, x, y, tamanhos):
+        """Desenha box de tamanhos centralizado e com ajuste"""
         c.setLineWidth(0.8)
+        c.setStrokeColor(HexColor('#CCCCCC'))
         c.roundRect(x, y, self.cfg.BOX_LARGURA, self.cfg.BOX_ALTURA, 2*mm)
+        
+        c.setFillColor(self.cfg.COR_TEXTO)
         c.setFont("Helvetica-Bold", self.cfg.FONTE_SUBTITULO)
-        c.drawCentredString(x + self.cfg.BOX_LARGURA/2, y + self.cfg.BOX_ALTURA - 7*mm, "Tamanhos")
+        centro_box = x + self.cfg.BOX_LARGURA/2
+        
+        c.drawCentredString(centro_box, y + self.cfg.BOX_ALTURA - 7*mm, "Tamanhos")
         c.line(x+2*mm, y+self.cfg.BOX_ALTURA-10*mm, x+self.cfg.BOX_LARGURA-2*mm, y+self.cfg.BOX_ALTURA-10*mm)
+        
         c.setFont("Helvetica", self.cfg.FONTE_TAMANHOS)
         cur_y = y + self.cfg.BOX_ALTURA - 14*mm
+        largura_util = self.cfg.BOX_LARGURA - 2*mm
+        
         for t in tamanhos:
-            txt = f"{t.get('tamanho','')} - {t.get('medida','')} - {t.get('codigo','')}"
-            c.drawString(x+2*mm, cur_y, txt)
+            # Monta o texto
+            partes = []
+            if t.get('tamanho'): partes.append(t.get('tamanho'))
+            if t.get('medida'): partes.append(t.get('medida'))
+            if t.get('codigo'): partes.append(t.get('codigo'))
+            
+            txt = " - ".join(partes)
+            
+            # Auto-ajuste de fonte para caber na largura
+            fonte_atual = self.cfg.FONTE_TAMANHOS
+            c.setFont("Helvetica", fonte_atual)
+            while c.stringWidth(txt, "Helvetica", fonte_atual) > largura_util and fonte_atual > 5:
+                fonte_atual -= 1
+                c.setFont("Helvetica", fonte_atual)
+            
+            c.drawCentredString(centro_box, cur_y, txt)
             cur_y -= 3.5*mm
+            # Reseta fonte
+            c.setFont("Helvetica", self.cfg.FONTE_TAMANHOS)
 
-    def gerar_preview(self, dados, img_path, logo_path, usar_img, width=400):
+    def gerar_preview(self, dados, logo_path, usar_img, width=400):
         if not HAS_PDF2IMAGE: return None
         try:
             from reportlab.pdfgen import canvas
             buffer = io.BytesIO()
             c = canvas.Canvas(buffer, pagesize=(self.cfg.LARGURA, self.cfg.ALTURA))
-            self.desenhar_layout(c, 0, 0, dados, img_path, logo_path, usar_img)
+            self.desenhar_layout(c, 0, 0, dados, logo_path, usar_img)
             c.save()
             buffer.seek(0)
             images = convert_from_bytes(buffer.read(), dpi=150)
@@ -314,7 +351,7 @@ class GeradorPDF:
 
 # === JANELA DE CONFIGURAÇÃO DE POSIÇÕES ===
 class JanelaConfiguracaoPosicoes(tk.Toplevel):
-    def __init__(self, parent, dados_lista, gerador, img_path, logo_path, usar_img, callback_confirmar):
+    def __init__(self, parent, dados_lista, gerador, logo_path, usar_img, callback_confirmar):
         super().__init__(parent)
         self.title("🎯 Configuração de Posições das Etiquetas")
         self.geometry("1000x750")
@@ -322,7 +359,6 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
         
         self.dados_lista = dados_lista
         self.gerador = gerador
-        self.img_path = img_path
         self.logo_path = logo_path
         self.usar_img = usar_img
         self.callback = callback_confirmar
@@ -341,7 +377,6 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
         main = tk.Frame(self, padx=20, pady=20, bg="#ecf0f1")
         main.pack(fill="both", expand=True)
         
-        # Painel Esquerdo
         left_panel = tk.Frame(main, bg="#ecf0f1")
         left_panel.pack(side="left", fill="both", expand=True, padx=(0, 10))
         
@@ -358,28 +393,22 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
         self.labels_posicao = []
         
         posicoes_info = [
-            ("Posição 1\nSuperior Esquerda", 0, 0),
-            ("Posição 2\nSuperior Direita", 0, 1),
-            ("Posição 3\nInferior Esquerda", 1, 0),
-            ("Posição 4\nInferior Direita", 1, 1)
+            ("Posição 1\nSuperior Esquerda", 0, 0), ("Posição 2\nSuperior Direita", 0, 1),
+            ("Posição 3\nInferior Esquerda", 1, 0), ("Posição 4\nInferior Direita", 1, 1)
         ]
         
         for i, (texto, row, col) in enumerate(posicoes_info):
-            frame_pos = tk.Frame(grid_frame, relief="solid", bd=3, bg="#ecf0f1", 
-                                cursor="hand2", width=200, height=150)
+            frame_pos = tk.Frame(grid_frame, relief="solid", bd=3, bg="#ecf0f1", cursor="hand2", width=200, height=150)
             frame_pos.grid(row=row, column=col, padx=15, pady=15, sticky="nsew")
             frame_pos.grid_propagate(False)
             
-            tk.Label(frame_pos, text=f"🔲 {i+1}", font=("Arial", 14, "bold"), 
-                    bg="#ecf0f1", fg="#34495e").pack(pady=(10, 5))
+            tk.Label(frame_pos, text=f"🔲 {i+1}", font=("Arial", 14, "bold"), bg="#ecf0f1", fg="#34495e").pack(pady=(10, 5))
             tk.Label(frame_pos, text=texto, font=("Arial", 8), bg="#ecf0f1", fg="#7f8c8d").pack()
             
-            label_selecionada = tk.Label(frame_pos, text="[Vazio]", font=("Arial", 9, "bold"), 
-                                        bg="#ecf0f1", fg="#95a5a6", wraplength=180)
+            label_selecionada = tk.Label(frame_pos, text="[Vazio]", font=("Arial", 9, "bold"), bg="#ecf0f1", fg="#95a5a6", wraplength=180)
             label_selecionada.pack(pady=(10, 5))
             
-            btn = tk.Button(frame_pos, text="📌 Selecionar Etiqueta", 
-                           command=lambda p=i: self._selecionar_etiqueta(p),
+            btn = tk.Button(frame_pos, text="📌 Selecionar Etiqueta", command=lambda p=i: self._selecionar_etiqueta(p),
                            bg="#3498db", fg="white", font=("Arial", 8, "bold"), cursor="hand2")
             btn.pack(pady=(5, 10))
             
@@ -390,7 +419,6 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
             grid_frame.grid_rowconfigure(i, weight=1)
             grid_frame.grid_columnconfigure(i, weight=1)
         
-        # Painel Direito
         right_panel = tk.Frame(main, bg="#ecf0f1", width=300)
         right_panel.pack(side="right", fill="y")
         right_panel.pack_propagate(False)
@@ -406,13 +434,13 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
         self.lista_layouts.pack(side="left", fill="both", expand=True)
         scroll_layouts.config(command=self.lista_layouts.yview)
         
-        tk.Button(layout_frame, text="📂 Carregar Layout", command=self._carregar_layout_selecionado, bg="#3498db", fg="white").pack(fill="x", pady=2)
-        tk.Button(layout_frame, text="💾 Salvar Layout", command=self._salvar_layout_atual, bg="#27ae60", fg="white").pack(fill="x", pady=2)
-        tk.Button(layout_frame, text="🗑️ Excluir Layout", command=self._excluir_layout_selecionado, bg="#e74c3c", fg="white").pack(fill="x", pady=2)
+        tk.Button(layout_frame, text="📂 Carregar", command=self._carregar_layout_selecionado, bg="#3498db", fg="white").pack(fill="x", pady=2)
+        tk.Button(layout_frame, text="💾 Salvar", command=self._salvar_layout_atual, bg="#27ae60", fg="white").pack(fill="x", pady=2)
+        tk.Button(layout_frame, text="🗑️ Excluir", command=self._excluir_layout_selecionado, bg="#e74c3c", fg="white").pack(fill="x", pady=2)
         
         action_frame = tk.Frame(self, bg="#ecf0f1", padx=20, pady=15)
         action_frame.pack(fill="x", side="bottom")
-        tk.Button(action_frame, text="🔄 Limpar Tudo", command=self._limpar_mapeamento, bg="#95a5a6", fg="white").pack(side="left", padx=5)
+        tk.Button(action_frame, text="🔄 Limpar", command=self._limpar_mapeamento, bg="#95a5a6", fg="white").pack(side="left", padx=5)
         tk.Button(action_frame, text="✅ GERAR PDF", command=self._confirmar, bg="#27ae60", fg="white", font=("Arial", 12, "bold"), height=2, width=18).pack(side="right", padx=5)
         
         self._atualizar_lista_layouts()
@@ -423,7 +451,6 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
             self.lista_layouts.insert(tk.END, f"{layout['nome']} ({layout['data_criacao']})")
 
     def _selecionar_etiqueta(self, posicao):
-        """Abre janela para escolher etiqueta da lista atual OU da biblioteca"""
         dialogo = tk.Toplevel(self)
         dialogo.title(f"Configurar Posição {posicao + 1}")
         dialogo.geometry("750x600")
@@ -433,7 +460,6 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
         abas = ttk.Notebook(dialogo)
         abas.pack(fill="both", expand=True, padx=10, pady=10)
         
-        # ABA 1: Lista Atual
         tab_atual = tk.Frame(abas)
         abas.add(tab_atual, text="📋 Lista Atual")
         lista_atual = tk.Listbox(tab_atual, font=("Arial", 10))
@@ -443,9 +469,8 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
             f = dados.get('Fornecedor', '')
             lista_atual.insert(tk.END, f"[{i+1}] {p} ({f})")
 
-        # ABA 2: Biblioteca
         tab_db = tk.Frame(abas)
-        abas.add(tab_db, text="🗄️ Biblioteca Salva (Por Fornecedor)")
+        abas.add(tab_db, text="🗄️ Biblioteca Salva")
         
         tree = ttk.Treeview(tab_db, columns=("Prazo"), show='tree headings')
         tree.heading("#0", text="Fornecedor / Produto")
@@ -482,7 +507,6 @@ class JanelaConfiguracaoPosicoes(tk.Toplevel):
                     messagebox.showwarning("Atenção", "Selecione um produto, não o fornecedor.")
                     return
                 
-                # Adiciona do DB para a lista de impressão
                 dados_db = mapa_temp[item_id]
                 self.dados_lista.append(dados_db)
                 novo_idx = len(self.dados_lista) - 1
@@ -620,7 +644,7 @@ class EditorConfiguracao(tk.Toplevel):
 class AppFortunne:
     def __init__(self, root):
         self.root = root
-        self.root.title("Fortunne Label System V10.0 - Enterprise Edition")
+        self.root.title("Fortunne Label System V12.0 - Final Edition")
         self.root.geometry("950x1000")
         
         style = ttk.Style()
@@ -630,7 +654,7 @@ class AppFortunne:
         self.historico = GerenciadorDados.carregar_historico()
         
         self.path_logo = tk.StringVar()
-        self.path_img = tk.StringVar()
+        self.path_manual_img = tk.StringVar()
         self.path_excel = tk.StringVar()
         self.tipo_produto = tk.StringVar()
         self.nome_pdf = tk.StringVar(value="Etiquetas_Fortunne")
@@ -660,12 +684,11 @@ class AppFortunne:
         self._montar_formulario()
 
     def _montar_formulario(self):
-        # Arquivos
-        fr_files = tk.LabelFrame(self.conteudo, text="📂 Arquivos e Mídia", font=("Arial", 11, "bold"), bg="#fff", padx=10, pady=10)
+        # Arquivos GLOBAIS
+        fr_files = tk.LabelFrame(self.conteudo, text="📂 Configuração Global", font=("Arial", 11, "bold"), bg="#fff", padx=10, pady=10)
         fr_files.pack(fill="x", padx=5, pady=8)
         self._input_file(fr_files, "Logo Empresa:", self.path_logo)
-        self._input_file(fr_files, "Imagem Produto:", self.path_img)
-        tk.Checkbutton(fr_files, text="✓ Incluir imagem", variable=self.usar_img, bg="#fff").pack(anchor="w")
+        tk.Checkbutton(fr_files, text="✓ Incluir imagem nas etiquetas", variable=self.usar_img, bg="#fff").pack(anchor="w")
 
         # Tabs
         self.tabs = ttk.Notebook(self.conteudo)
@@ -692,7 +715,7 @@ class AppFortunne:
         tk.Button(f, text="📁", command=lambda: self._buscar_arq(var)).pack(side="right")
 
     def _buscar_arq(self, var):
-        f = filedialog.askopenfilename()
+        f = filedialog.askopenfilename(filetypes=[("Imagens/Excel", "*.png *.jpg *.jpeg *.xlsx")])
         if f: var.set(f)
 
     def _tab_manual(self):
@@ -708,7 +731,7 @@ class AppFortunne:
         self.combo_tipo.bind("<<ComboboxSelected>>", self._render_form)
         if chaves: self.combo_tipo.current(0)
         
-        tk.Label(fr_sel, text="Qtd:", bg="#fff").pack(side="left", padx=10)
+        tk.Label(fr_sel, text="Qtd cópias:", bg="#fff").pack(side="left", padx=10)
         tk.Spinbox(fr_sel, from_=1, to=100, textvariable=self.quantidade, width=5).pack(side="left")
 
         canvas_form = tk.Canvas(f_man, bg="#fff")
@@ -717,13 +740,12 @@ class AppFortunne:
         self.container_campos.bind("<Configure>", lambda e: canvas_form.configure(scrollregion=canvas_form.bbox("all")))
         canvas_form.create_window((0, 0), window=self.container_campos, anchor="nw")
         canvas_form.configure(yscrollcommand=scroll_form.set)
-        canvas_form.pack(side="left", fill="both", expand=True)
+        canvas_form.pack(side="left", fill="both", expand=True, padx=10)
         scroll_form.pack(side="right", fill="y")
         
         self.vars_campos = {}
         self.vars_tamanhos = []
         
-        # Botão Salvar DB
         fr_bot = tk.Frame(f_man, bg="#fff", pady=10)
         fr_bot.pack(fill="x", side="bottom")
         tk.Button(fr_bot, text="💾 SALVAR NA BIBLIOTECA", command=self._salvar_na_biblioteca, 
@@ -734,10 +756,10 @@ class AppFortunne:
     def _salvar_na_biblioteca(self):
         dados = self._coletar_manual()
         if not dados:
-            messagebox.showwarning("Atenção", "Preencha os dados!")
+            messagebox.showwarning("Atenção", "Preencha os dados (Nome, Fornecedor)!")
             return
         GerenciadorDados.salvar_produto_db(dados)
-        messagebox.showinfo("Salvo", f"Produto '{dados['Produto']}' salvo na biblioteca!")
+        messagebox.showinfo("Salvo", f"Produto '{dados['Produto']}' salvo!\nImagem vinculada: {'Sim' if dados.get('imagem') else 'Não'}")
 
     def _render_form(self, event=None):
         for w in self.container_campos.winfo_children(): w.destroy()
@@ -749,15 +771,18 @@ class AppFortunne:
         self.vars_campos = {}
         self.vars_tamanhos = []
         
-        self._criar_input(self.container_campos, "Produto", "Nome", 0)
+        fr_img = tk.LabelFrame(self.container_campos, text="📸 Imagem deste Produto", bg="#f9f9f9", padx=5, pady=5)
+        fr_img.grid(row=0, column=0, columnspan=2, sticky="ew", pady=5)
+        self._input_file(fr_img, "Arquivo:", self.path_manual_img)
+
+        self._criar_input(self.container_campos, "Produto", "Nome", 1)
         for i, c in enumerate(campos):
-            self._criar_input(self.container_campos, c, placeholders.get(c, ""), i+1, auto=True)
+            self._criar_input(self.container_campos, c, placeholders.get(c, ""), i+2, auto=True)
         
-        last = len(campos) + 1
+        last = len(campos) + 2
         self._criar_input(self.container_campos, "Fornecedor", "Nome", last, auto=True)
         self._criar_input(self.container_campos, "Prazo", "Dias", last+1)
         
-        # Tamanhos
         fr = tk.LabelFrame(self.container_campos, text="Tamanhos", bg="#fff")
         fr.grid(row=last+2, column=0, columnspan=2, sticky="ew", pady=10)
         tk.Label(fr, text="Tam / Med / Cod", bg="#fff").pack()
@@ -787,6 +812,8 @@ class AppFortunne:
             dados[campo] = var.get().strip()
         
         if not dados.get('Produto'): return None
+        
+        dados['imagem'] = self.path_manual_img.get()
         
         tipo = self.tipo_produto.get()
         campos = self.config_produtos.get(tipo, {}).get('campos', [])
@@ -840,7 +867,6 @@ class AppFortunne:
                 d['specs_list'] = [f"{c}: {row.get(c,'')}" for c in campos if not pd.isna(row.get(c))]
                 
                 tams = []
-                # Simplificado para 1 tamanho no exemplo, expandir conforme necessidade
                 if not pd.isna(row.get('Tam1')):
                     tams.append({'tamanho': str(row['Tam1']), 'medida': str(row.get('Med1','')), 'codigo': str(row.get('Cod1',''))})
                 d['tamanhos'] = tams
@@ -861,7 +887,7 @@ class AppFortunne:
         win = tk.Toplevel(self.root)
         win.title("Preview")
         gen = GeradorPDF()
-        img = gen.gerar_preview(dados, self.path_img.get(), self.path_logo.get(), self.usar_img.get())
+        img = gen.gerar_preview(dados, self.path_logo.get(), self.usar_img.get())
         if img:
             ph = ImageTk.PhotoImage(img)
             lbl = tk.Label(win, image=ph)
@@ -878,7 +904,7 @@ class AppFortunne:
             if not lista: return
             
         gen = GeradorPDF()
-        JanelaConfiguracaoPosicoes(self.root, lista, gen, self.path_img.get(), self.path_logo.get(), self.usar_img.get(), 
+        JanelaConfiguracaoPosicoes(self.root, lista, gen, self.path_logo.get(), self.usar_img.get(), 
                                    lambda m: self._gerar_pdf_final(lista, m, gen))
 
     def _gerar_pdf_final(self, lista, mapeamento, gen):
@@ -895,7 +921,7 @@ class AppFortunne:
                     idx = mapeamento[i]
                     usados.add(idx)
                     x, y = posicoes[i]
-                    gen.desenhar_layout(c, x, y, lista[idx], self.path_img.get(), self.path_logo.get(), self.usar_img.get())
+                    gen.desenhar_layout(c, x, y, lista[idx], self.path_logo.get(), self.usar_img.get())
             
             c.showPage()
             c.save()
@@ -904,7 +930,7 @@ class AppFortunne:
             messagebox.showerror("Erro", str(e))
 
     def _abrir_editor_config(self):
-        EditorConfiguracao(self.root, lambda: [self._init_ui()]) # Recarrega simples
+        EditorConfiguracao(self.root, lambda: [self._init_ui()])
 
 if __name__ == "__main__":
     root = tk.Tk()
