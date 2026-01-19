@@ -1,0 +1,47 @@
+2026-01-15 13:50:41,081 - INFO - Configuração salva com sucesso.
+2026-01-15 13:56:25,346 - INFO - Configuração salva com sucesso.
+2026-01-19 09:09:56,611 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:10:32,981 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:10:43,568 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:10:47,531 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:51:49,594 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:03,199 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:06,595 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:12,254 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:15,597 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:18,974 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:22,321 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:25,869 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:29,165 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:32,553 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:35,949 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:39,930 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:43,335 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:46,757 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:50,122 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:53,570 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:52:57,008 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:53:00,376 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:55:34,180 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:55:43,342 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 09:56:05,880 - ERROR - Erro ao gerar PDF: 'list' object has no attribute 'strip'
+2026-01-19 09:56:19,944 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:02:57,746 - ERROR - Erro ao gerar preview: 'GeradorPDF' object has no attribute 'gerar_preview'
+2026-01-19 10:03:12,642 - ERROR - Erro ao gerar PDF: 'GeradorPDF' object has no attribute 'desenhar_layout'
+2026-01-19 10:07:53,521 - ERROR - Erro ao gerar PDF: 'GeradorPDF' object has no attribute 'desenhar_layout'
+2026-01-19 10:08:27,360 - ERROR - Erro ao gerar PDF: 'GeradorPDF' object has no attribute 'desenhar_layout'
+2026-01-19 10:09:14,110 - ERROR - Erro ao gerar PDF: 'GeradorPDF' object has no attribute 'desenhar_layout'
+2026-01-19 10:10:10,438 - ERROR - Erro ao gerar PDF: 'GeradorPDF' object has no attribute 'desenhar_layout'
+2026-01-19 10:14:11,873 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:14:15,767 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:14:19,251 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:14:25,367 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:14:38,563 - ERROR - Erro ao gerar PDF: 'list' object has no attribute 'strip'
+2026-01-19 10:56:50,135 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:56:53,553 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:56:57,003 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:57:00,459 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:57:06,269 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:57:09,668 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 10:57:13,084 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?
+2026-01-19 12:35:55,714 - ERROR - Erro ao gerar preview: Unable to get page count. Is poppler installed and in PATH?

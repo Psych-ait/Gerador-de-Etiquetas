@@ -1,0 +1,410 @@
+{
+    "FASD": {
+        "teste": {
+            "Produto": "teste",
+            "Módulos": "3 modulos de 1,60",
+            "Braços": "braço 10 cm",
+            "Almofadas": "FGX",
+            "Tecido": "FUX",
+            "Pé": "BHV",
+            "Fornecedor": "FASD",
+            "Prazo": "60 diass",
+            "specs_list": [
+                "Módulos: 3 modulos de 1,60",
+                "Braços: braço 10 cm",
+                "Almofadas: FGX",
+                "Tecido: FUX",
+                "Pé: BHV"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "gsgd",
+                    "medida": "asgd",
+                    "codigo": "asdg"
+                },
+                {
+                    "tamanho": "asd",
+                    "medida": "asgd",
+                    "codigo": "asdg"
+                },
+                {
+                    "tamanho": "ags",
+                    "medida": "asdg",
+                    "codigo": "asdg"
+                }
+            ]
+        },
+        "teste 2": {
+            "Produto": "teste 2",
+            "Módulos": "3 modulos de 1,60",
+            "Braços": "braço 10 cm",
+            "Almofadas": "FGX",
+            "Tecido": "HIVB",
+            "Pé": "BHV",
+            "Fornecedor": "FASD",
+            "Prazo": "60 diass",
+            "specs_list": [
+                "Módulos: 3 modulos de 1,60",
+                "Braços: braço 10 cm",
+                "Almofadas: FGX",
+                "Tecido: HIVB",
+                "Pé: BHV"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "gsgd",
+                    "medida": "asgd",
+                    "codigo": "asdg"
+                },
+                {
+                    "tamanho": "asd",
+                    "medida": "asgd",
+                    "codigo": "asdg"
+                },
+                {
+                    "tamanho": "ags",
+                    "medida": "asdg",
+                    "codigo": "asdg"
+                }
+            ]
+        },
+        "teste 3": {
+            "Produto": "teste 3",
+            "Módulos": "3 modulos de 1,60",
+            "Braços": "braço 10 cm",
+            "Almofadas": "FGX",
+            "Tecido": "HIVB",
+            "Pé": "BHV",
+            "Fornecedor": "FASD",
+            "Prazo": "60 diass",
+            "specs_list": [
+                "Módulos: 3 modulos de 1,60",
+                "Braços: braço 10 cm",
+                "Almofadas: FGX",
+                "Tecido: HIVB",
+                "Pé: BHV"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "gsgd",
+                    "medida": "asgd",
+                    "codigo": "asdg"
+                },
+                {
+                    "tamanho": "asd",
+                    "medida": "asgd",
+                    "codigo": "asdg"
+                },
+                {
+                    "tamanho": "ags",
+                    "medida": "asdg",
+                    "codigo": "asdg"
+                }
+            ]
+        }
+    },
+    "ART": {
+        "Mesa Mia": {
+            "Produto": "Mesa Mia",
+            "Material": "Madeira",
+            "Acabamento": "Marble Canto Garrafa",
+            "Formato": "Retangular",
+            "Tampo": "Barril",
+            "Base": "CC-A535",
+            "Fornecedor": "ART",
+            "Prazo": "60 dias Uteis",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/MESA MIA.png",
+            "specs_list": [
+                "Material: Madeira",
+                "Acabamento: Marble Canto Garrafa",
+                "Formato: Retangular",
+                "Tampo: Barril",
+                "Base: CC-A535"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "A",
+                    "medida": "160X90X77",
+                    "codigo": "3397"
+                },
+                {
+                    "tamanho": "B",
+                    "medida": "180X100X77",
+                    "codigo": "3779"
+                },
+                {
+                    "tamanho": "C",
+                    "medida": "200X100X77",
+                    "codigo": "4162"
+                },
+                {
+                    "tamanho": "D",
+                    "medida": "220X110X77",
+                    "codigo": "5080"
+                }
+            ]
+        },
+        "Mesa Flor": {
+            "Produto": "Mesa Flor",
+            "Material": "Madeira",
+            "Acabamento": "Marble Canto Garrafa",
+            "Formato": "Retangular",
+            "Tampo": "Vidro Off White",
+            "Base": "CC",
+            "Fornecedor": "ART",
+            "Prazo": "60 dias Uteis",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/MESA FLOR .png",
+            "specs_list": [
+                "Material: Madeira",
+                "Acabamento: Marble Canto Garrafa",
+                "Formato: Retangular",
+                "Tampo: Vidro Off White",
+                "Base: CC"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "A",
+                    "medida": "200X100X77",
+                    "codigo": "4330"
+                },
+                {
+                    "tamanho": "B",
+                    "medida": "220X110X77",
+                    "codigo": "5171"
+                }
+            ]
+        },
+        "Mesa Rosa": {
+            "Produto": "Mesa Rosa",
+            "Material": "Madeira",
+            "Acabamento": "Laqueado",
+            "Formato": "Retangular",
+            "Tampo": "Vidro Off White",
+            "Base": "CC",
+            "Fornecedor": "ART",
+            "Prazo": "60 dias Uteis",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/MESA ROSA .png",
+            "specs_list": [
+                "Material: Madeira",
+                "Acabamento: Laqueado",
+                "Formato: Retangular",
+                "Tampo: Vidro Off White",
+                "Base: CC"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "A",
+                    "medida": "160X90X77",
+                    "codigo": "2846"
+                },
+                {
+                    "tamanho": "B",
+                    "medida": "180X100X77",
+                    "codigo": "3274"
+                },
+                {
+                    "tamanho": "C",
+                    "medida": "200X100X77",
+                    "codigo": "3657"
+                },
+                {
+                    "tamanho": "D",
+                    "medida": "220X110X77",
+                    "codigo": "4728"
+                }
+            ]
+        },
+        "Mesa Maisa": {
+            "Produto": "Mesa Maisa",
+            "Material": "Madeira",
+            "Acabamento": "Laqueado",
+            "Formato": "Redonda",
+            "Tampo": "Vidro Off White",
+            "Base": "CC A535",
+            "Fornecedor": "ART",
+            "Prazo": "60 dias Uteis",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/MESA MAISA.png",
+            "specs_list": [
+                "Material: Madeira",
+                "Acabamento: Laqueado",
+                "Formato: Redonda",
+                "Tampo: Vidro Off White",
+                "Base: CC A535"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "A",
+                    "medida": "110X110X77",
+                    "codigo": "2907"
+                },
+                {
+                    "tamanho": "B",
+                    "medida": "135X135X77",
+                    "codigo": "3978"
+                }
+            ]
+        }
+    },
+    "LAR": {
+        "Baker Com Chaise": {
+            "Produto": "Baker Com Chaise",
+            "Módulos": "1 Módulo 1,60M + Chaise 1M",
+            "Braços": "22CM",
+            "Almofadas": "A Parte",
+            "Tecido": "Couro Cosmos Bege",
+            "Pé": "Preto",
+            "Fornecedor": "LAR",
+            "Prazo": "60 Dias",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/lara/BAKER.png",
+            "specs_list": [
+                "Módulos: 1 Módulo 1,60M + Chaise 1M",
+                "Braços: 22CM",
+                "Almofadas: A Parte",
+                "Tecido: Couro Cosmos Bege",
+                "Pé: Preto"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "2,04M ",
+                    "medida": "160+100+braços",
+                    "codigo": "03011.6866.2026"
+                },
+                {
+                    "tamanho": "2,24M",
+                    "medida": "180+100+braços",
+                    "codigo": "03011.7404.2026"
+                },
+                {
+                    "tamanho": "2,44M",
+                    "medida": "200+100+braços",
+                    "codigo": "03011.7943.2026"
+                }
+            ]
+        },
+        "Navarro Com Chaise": {
+            "Produto": "Navarro Com Chaise",
+            "Módulos": "1 Módulo 1,40M + Chaise 1M",
+            "Braços": "20CM",
+            "Almofadas": "A Parte",
+            "Tecido": "Couro Cosmos Caramelo 20331",
+            "Pé": "Preto",
+            "Fornecedor": "LAR",
+            "Prazo": "60 Dias",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/lara/navarro .png",
+            "specs_list": [
+                "Módulos: 1 Módulo 1,40M + Chaise 1M",
+                "Braços: 20CM",
+                "Almofadas: A Parte",
+                "Tecido: Couro Cosmos Caramelo 20331",
+                "Pé: Preto"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "2,80m",
+                    "medida": "140+100+braços",
+                    "codigo": "03011.13273.2026"
+                },
+                {
+                    "tamanho": "3,60M",
+                    "medida": "200+100+braços",
+                    "codigo": "03011.11926.2026"
+                }
+            ]
+        },
+        "Galeano com Chaise": {
+            "Produto": "Galeano com Chaise",
+            "Módulos": "1 Módulo de 1,40m +Chaise",
+            "Braços": "20CM",
+            "Almofadas": "A Parte",
+            "Tecido": "Kruger Gelo Castanho 2424",
+            "Pé": "Preto",
+            "Fornecedor": "LAR",
+            "Prazo": "60 Dias",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/lara/GALEANO.png",
+            "specs_list": [
+                "Módulos: 1 Módulo de 1,40m +Chaise",
+                "Braços: 20CM",
+                "Almofadas: A Parte",
+                "Tecido: Kruger Gelo Castanho 2424",
+                "Pé: Preto"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "3,10M",
+                    "medida": "160+100+braços (50)",
+                    "codigo": " 03011.8915.2026"
+                },
+                {
+                    "tamanho": "3,30M",
+                    "medida": "180+100+braços (50)",
+                    "codigo": "03011.9421.2026"
+                },
+                {
+                    "tamanho": "3,60M",
+                    "medida": "200+100+braços (50)",
+                    "codigo": "03011.9772.2026"
+                }
+            ]
+        },
+        "Neruda ilha Com chaise": {
+            "Produto": "Neruda ilha Com chaise",
+            "Módulos": "1 Modulo de 1,65 s/braço ilha + chaise",
+            "Braços": "23CM",
+            "Almofadas": "A Parte",
+            "Tecido": "Kruger Bege Castanho 2424",
+            "Pé": "Madeira",
+            "Fornecedor": "LAR",
+            "Prazo": "60 Dias",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/lara/NERUDA.png",
+            "specs_list": [
+                "Módulos: 1 Modulo de 1,65 s/braço ilha + chaise",
+                "Braços: 23CM",
+                "Almofadas: A Parte",
+                "Tecido: Kruger Bege Castanho 2424",
+                "Pé: Madeira"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "2,88m ",
+                    "medida": "165 + 122 ( chaise com braço)",
+                    "codigo": "03011.9179.2026"
+                }
+            ]
+        },
+        "Valentine + Puff": {
+            "Produto": "Valentine + Puff",
+            "Módulos": "2 modulos de 1M + puff",
+            "Braços": "20cm",
+            "Almofadas": "A Parte",
+            "Tecido": "Kruger Prata Castanho 2425",
+            "Pé": "Madeira",
+            "Fornecedor": "LAR",
+            "Prazo": "60 Dias úteis",
+            "imagem": "C:/Users/pedro/Pictures/Saved Pictures/lara/valentine .png",
+            "specs_list": [
+                "Módulos: 2 modulos de 1M + puff",
+                "Braços: 20cm",
+                "Almofadas: A Parte",
+                "Tecido: Kruger Prata Castanho 2425",
+                "Pé: Madeira"
+            ],
+            "tamanhos": [
+                {
+                    "tamanho": "2,00M",
+                    "medida": "2 Mód. 80 C/1 Braço",
+                    "codigo": "03011.7695.2026"
+                },
+                {
+                    "tamanho": "2,40M",
+                    "medida": "2 Mód. 100 C/1 Braço",
+                    "codigo": "03011.8341.2026"
+                },
+                {
+                    "tamanho": "2,80M",
+                    "medida": "2 Mód. 120 C/1 Braço",
+                    "codigo": "03011.9149.2026"
+                }
+            ]
+        }
+    }
+}
